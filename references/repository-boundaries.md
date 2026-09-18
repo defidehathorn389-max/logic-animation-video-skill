@@ -5,13 +5,13 @@
 | 制作原则、通用绘制/对齐/编码/校验工具、空白schema | skill | 公开 |
 | 人物、视频、音频、封面、字幕、真实对齐数据、每期文案 | assets | 私有 |
 | 特定项目渲染脚本、具体数字模型、重建输入配置、素材hash清单 | assets | 私有 |
-| 用户决定、当前任务、待办、版本采用状态、完成记录、QA结果 | handoff | 私有 |
+| 用户决定、当前任务、待办、版本采用状态、完成记录、QA结果 | agent-progress | 私有 |
 | 凭据、认证配置 | 不进任何仓库 | 临时授权 |
 
 ## 写入流程
 1. 先查私有agent-progress的任务与源资产版本。
 2. 从assets按路径和hash读取素材，结果回assets，通用规则变更才进skill。
-3. 在handoff记录assets/skill各自的commit、path、sha256，不嵌入整支视频或复制Skill正文。
+3. 在agent-progress记录assets/skill各自的commit、path、sha256，不嵌入整支视频或复制Skill正文。
 4. 写入前扫描提交和ZIP：skill禁止媒体与状态文件；发布ZIP禁止交接、QA报告和制作规范。
 5. 上传后验证两个私有库仍为private、skill仍为public，并核验远程对象。
 6. 确認备份成功后清理本地重复件，保留当前需要的文件与无凭据恢复索引。
