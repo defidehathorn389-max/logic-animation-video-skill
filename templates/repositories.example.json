@@ -1,15 +1,19 @@
 {
-  "skill": {
+  "production_skill": {
     "url": "https://github.com/defidehathorn389-max/logic-animation-video-skill",
+    "visibility": "public"
+  },
+  "progress_skill": {
+    "url": "https://github.com/defidehathorn389-max/agent-progress-skill",
     "visibility": "public"
   },
   "assets": {
     "url": "https://github.com/defidehathorn389-max/logic-animation-video-assets",
     "visibility": "private"
   },
-  "handoff": {
-    "url": "https://github.com/defidehathorn389-max/logic-animation-video-handoff",
+  "progress": {
+    "url": "https://github.com/defidehathorn389-max/agent-progress",
     "visibility": "private"
   },
-  "current_task": "read privately from handoff; never write here"
+  "project": "<domain>/<id> -- resolve privately; never store live state here"
 }

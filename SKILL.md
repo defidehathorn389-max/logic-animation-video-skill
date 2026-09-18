@@ -7,12 +7,12 @@ description: 制作中文横屏逻辑谜题动画，统一黑白讲解人物、�
 
 ## 仓库边界是强制要求
 1. 当前公开库只放通用规则、工具、空白配置；不放素材、成片、配音、真实逐字JSON、发布包、任务状态、HANDOFF或历史会话备份。
-2. 项目专属素材和重建工程放私有assets库。进度、用户确认、待办、验证证据、任务清单放独立私有handoff库。
+2. 项目专属素材和重建工程放私有assets库。进度、用户确认、待办、验证证据、任务清单放独立私有agent-progress库。
 3. 跨库以repo+commit+path+sha256引用，不反复复制内容，不在任何仓库保存凭据。
-4. 每轮先从私有交接库读取当前任务，结束时更新同一交接。禁止将“当前进度”追加到本Skill或README。
+4. 每轮按agent-progress-skill读取权威HEAD检查点，工作中和结束时追加新检查点。禁止将“当前进度”追加到本Skill或README。
 
 ## 执行顺序
-- 读取 `references/repository-boundaries.md` 与 `references/production-standard.md`，从私有交接库确定任务编号和资产版本。
+- 读取 `references/repository-boundaries.md` 与 `references/production-standard.md`，从统一私有进度库确定任务编号和资产版本。
 - 先校验题设、解法和理想化假设；修改旧题保留编号和原片，不能冒充新题。
 - 先测真实旁白时长，使用声学逐字对齐，所有动画、计数和字幕共享事件时间轴。
 - 生成精确逻辑对象和多姿态角色；代码绘制文字、计数和公式，生图只承担美术。
@@ -28,3 +28,11 @@ description: 制作中文横屏逻辑谜题动画，统一黑白讲解人物、�
 - `tools/check_repository_boundary.py`：公开Skill目录白名单和禁止媒体/进度文件检查。
 
 项目专属渲染脚本属于assets中的项目工程；不能为了“可复现”把整个私有项目拖回公开Skill。
+
+## 进度协议只使用Agent Progress
+
+读取 https://github.com/defidehathorn389-max/agent-progress-skill 的SKILL.md；实际状态从私有agent-progress选择对应project读取HEAD指向的检查点。不要在本库或素材库另写HANDOFF，不再建视频专属进度仓库。CURRENT为派生视图，校验后以HEAD为准。
+
+## 新选题门禁
+
+制作新一期前必须读取进度项目中的catalog/episodes.json与制作清单：比较题名、别名、puzzle_key和核心解法，不只匹配标题。所有已完成、制作中、待审及历史题都参与比较；换道具/人物/数字但关键机制相同仍是重复题。没有访问最新清单不能宣称查重通过。选题后先登记唯一编号、机制和制作状态，再生成，防止中断后重复选题。修订沿用编号与revision。只复用角色、片头片尾和模板，不重做旧题冒充新一期。

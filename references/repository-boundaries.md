@@ -9,7 +9,7 @@
 | 凭据、认证配置 | 不进任何仓库 | 临时授权 |
 
 ## 写入流程
-1. 先查私有handoff的任务与源资产版本。
+1. 先查私有agent-progress的任务与源资产版本。
 2. 从assets按路径和hash读取素材，结果回assets，通用规则变更才进skill。
 3. 在handoff记录assets/skill各自的commit、path、sha256，不嵌入整支视频或复制Skill正文。
 4. 写入前扫描提交和ZIP：skill禁止媒体与状态文件；发布ZIP禁止交接、QA报告和制作规范。
