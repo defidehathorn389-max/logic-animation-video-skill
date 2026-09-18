@@ -1,0 +1,15 @@
+{
+  "skill": {
+    "url": "https://github.com/defidehathorn389-max/logic-animation-video-skill",
+    "visibility": "public"
+  },
+  "assets": {
+    "url": "https://github.com/defidehathorn389-max/logic-animation-video-assets",
+    "visibility": "private"
+  },
+  "handoff": {
+    "url": "https://github.com/defidehathorn389-max/logic-animation-video-handoff",
+    "visibility": "private"
+  },
+  "current_task": "read privately from handoff; never write here"
+}

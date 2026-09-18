@@ -1,0 +1,5 @@
+-r requirements.txt
+# Install matching CPU torch/torchaudio wheels when GPU libraries are unavailable.
+torch
+torchaudio
+stable-ts

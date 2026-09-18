@@ -1,0 +1,21 @@
+{
+  "episode": "EPISODE-ID",
+  "brand": "墨问",
+  "rate": 1.0,
+  "intro_silence": 0.4,
+  "outro_silence": 1.2,
+  "pause_after": 2,
+  "pause_seconds": 3,
+  "source_audio": "path/in/private/assets",
+  "lines": [
+    [
+      "准确原稿示例，不含真实项目内容"
+    ]
+  ],
+  "video": {
+    "width": 1920,
+    "height": 1080,
+    "fps": 30
+  },
+  "bgm_gain_db": -25
+}
