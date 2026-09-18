@@ -1,7 +1,7 @@
 """Shared publishing pipeline: SC typography, acoustic captions, poses, sound, QA."""
 import math,json,wave,subprocess,hashlib,re,os
 from pathlib import Path
-import numpy as np
+import numpy as np, cv2
 from PIL import Image,ImageDraw,ImageFont
 import imageio_ffmpeg
 FF=imageio_ffmpeg.get_ffmpeg_exe()
@@ -23,7 +23,7 @@ class Episode:
    sp=self.images[kind];self.sprites[key]=sp.resize((round(h*self.scale*sp.width/sp.height),round(h*self.scale)),Image.Resampling.LANCZOS)
   sp=self.sprites[key];im.paste(sp,(round(x*self.scale-sp.width/2),round(bottom*self.scale-sp.height)),sp)
  def captions(self,d,t):
-  q=next((q for q in self.cues if q['start']<=t<q['end']+.12),None)
+  q=next((q for i,q in enumerate(self.cues) if q['start']<=t<min(q['end']+.12,self.cues[i+1]['start'] if i+1<len(self.cues) else float('inf'))),None)
   if q is None:return
   f=ImageFont.truetype(FONT,round(29*self.scale),index=2);ww=[f.getlength(c)/self.scale for c in q['text']];x=640-sum(ww)/2
   for j,c in enumerate(q['chars']):
@@ -68,15 +68,16 @@ class Episode:
     proc.stdin.write(func(k/30).tobytes())
     if k%600==0:print(p.name,k/30,'/',self.total,flush=True)
    proc.stdin.close();assert proc.wait()==0
-  cmd=[FF,'-y','-i',str(self.shared/'intro.mp4'),'-i',str(body),'-i',str(self.shared/'outro.mp4'),'-filter_complex',f'[0:v]setpts=PTS-STARTPTS[v0];[1:v]setpts=PTS-STARTPTS[v1];[2:v]setpts=PTS-STARTPTS[v2];[0:a]aresample=48000,apad,atrim=duration=1,asetpts=PTS-STARTPTS[a0];[1:a]aresample=48000,apad,atrim=duration={frames/30},asetpts=PTS-STARTPTS[a1];[2:a]aresample=48000,apad,atrim=duration=3,asetpts=PTS-STARTPTS[a2];[v0][a0][v1][a1][v2][a2]concat=n=3:v=1:a=1[v][a]','-map','[v]','-map','[a]','-c:v','libx264','-preset','veryfast','-threads','1','-crf','19','-pix_fmt','yuv420p','-c:a','aac','-b:a','160k','-movflags','+faststart',str(p/'video.mp4')]
+  cmd=[FF,'-y','-i',str(self.shared/'intro.mp4'),'-i',str(body),'-i',str(self.shared/'outro.mp4'),'-filter_complex',f'[0:v]setpts=PTS-STARTPTS[v0];[1:v]setpts=PTS-STARTPTS[v1];[2:v]setpts=PTS-STARTPTS[v2];[0:a]aresample=48000,apad,atrim=duration=1,asetpts=PTS-STARTPTS[a0];[1:a]aresample=48000,apad,atrim=duration={frames/30},asetpts=PTS-STARTPTS[a1];[2:a]aresample=48000,apad,atrim=duration=3,asetpts=PTS-STARTPTS[a2];[v0][a0][v1][a1][v2][a2]concat=n=3:v=1:a=1[v][a]','-map','[v]','-map','[a]','-r','30','-c:v','libx264','-preset','veryfast','-threads','1','-crf','19','-pix_fmt','yuv420p','-c:a','aac','-b:a','160k','-movflags','+faststart',str(p/'video.mp4')]
   subprocess.run(cmd,capture_output=True,check=True)
   def ts(t):v=round(t*1000);return f'{v//3600000:02}:{v//60000%60:02}:{v//1000%60:02},{v%1000:03}'
-  (p/'subtitles.srt').write_text(''.join(f"{i+1}\n{ts(q['start']+1)} --> {ts(q['end']+1.12)}\n{q['text']}\n\n" for i,q in enumerate(self.cues)))
+  (p/'subtitles.srt').write_text(''.join(f"{i+1}\n{ts(q['start']+1)} --> {ts(min(q['end']+.12,self.cues[i+1]['start'] if i+1<len(self.cues) else q['end']+.12)+1)}\n{q['text']}\n\n" for i,q in enumerate(self.cues)))
   chars=json.loads(json.dumps(self.cues))
   for q in chars:
    q['start']+=1;q['end']+=1
    for c in q['chars']:c['start']+=1;c['end']+=1
   (p/'char-timing-final.json').write_text(json.dumps(chars,ensure_ascii=False,indent=2))
   r=subprocess.run([FF,'-v','error','-i',str(p/'video.mp4'),'-f','null','-'],capture_output=True)
-  q={'decode_ok':r.returncode==0,'errors':r.stderr.decode(),'duration_seconds':frames/30+4,'resolution':[1920,1080],'fps':30,'sha256':hashlib.sha256((p/'video.mp4').read_bytes()).hexdigest(),'bytes':(p/'video.mp4').stat().st_size,'character_alignment':'acoustic DTW + silence trim; machine estimates not manual zero-error proof'}
+  cap=cv2.VideoCapture(str(p/'video.mp4'));actual_fps=cap.get(cv2.CAP_PROP_FPS);actual_frames=cap.get(cv2.CAP_PROP_FRAME_COUNT);actual_size=[int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)),int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))];cap.release()
+  q={'decode_ok':r.returncode==0,'errors':r.stderr.decode(),'duration_seconds':actual_frames/actual_fps if actual_fps else None,'resolution':actual_size,'fps':actual_fps,'sha256':hashlib.sha256((p/'video.mp4').read_bytes()).hexdigest(),'bytes':(p/'video.mp4').stat().st_size,'character_alignment':'acoustic DTW + silence trim; machine estimates not manual zero-error proof'}
   (self.reports/'qa.json').write_text(json.dumps(q,ensure_ascii=False,indent=2));print('DONE',p.name,q,flush=True)
