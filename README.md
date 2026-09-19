@@ -5,6 +5,7 @@
 - 入口：[SKILL.md](SKILL.md)
 - 规范：[references/production-standard.md](references/production-standard.md)
 - 三库边界：[references/repository-boundaries.md](references/repository-boundaries.md)
+- 参考研究方法与解谜短视频范式：[references/reference-study-playbook.md](references/reference-study-playbook.md)
 - 工具：`tools/`；空白模板：`templates/`
 
 ## 三库协作

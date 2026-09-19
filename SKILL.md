@@ -12,7 +12,7 @@ description: 制作中文横屏逻辑谜题动画，统一黑白讲解人物、�
 4. 每轮按agent-progress-skill读取权威HEAD检查点，工作中和结束时追加新检查点。禁止将“当前进度”追加到本Skill或README。
 
 ## 执行顺序
-- 读取 `references/repository-boundaries.md` 与 `references/production-standard.md`，从统一私有进度库确定任务编号和资产版本。
+- 读取 `references/repository-boundaries.md` 与 `references/production-standard.md`（含第 9 节解谜短视频结构范式），从统一私有进度库确定任务编号和资产版本。研究指定参考创作者时按 `references/reference-study-playbook.md` 执行，证据只进私有进度库。
 - 先校验题设、解法和理想化假设；修改旧题保留编号和原片，不能冒充新题。
 - 先测真实旁白时长，使用声学逐字对齐，所有动画、计数和字幕共享事件时间轴。
 - 生成精确逻辑对象和多姿态角色；代码绘制文字、计数和公式，生图只承担美术。
@@ -27,6 +27,7 @@ description: 制作中文横屏逻辑谜题动画，统一黑白讲解人物、�
 - `tools/align_characters.py`：根据准确原稿和干净音频做字符声学对齐，结果存入指定私有项目目录。
 - `tools/validate_video.py`：编码、尺寸、帧率、完整解码检查；输出应存agent-progress的对应项目证据目录，不提交本库。
 - `tools/check_repository_boundary.py`：公开Skill目录白名单和禁止媒体/进度文件检查。
+- `tools/study_frames.py`：参考研究用抽帧拼图、亮度时间线、场景切换与响度测量；只处理公开可得文件，输出存私有证据目录。
 
 项目专属渲染脚本属于assets中的项目工程；不能为了“可复现”把整个私有项目拖回公开Skill。
 
@@ -39,3 +40,5 @@ description: 制作中文横屏逻辑谜题动画，统一黑白讲解人物、�
 制作新一期前必须读取进度项目中的catalog/episodes.json与制作清单：比较题名、别名、puzzle_key和核心解法，不只匹配标题。所有已完成、制作中、待审及历史题都参与比较；换道具/人物/数字但关键机制相同仍是重复题。没有访问最新清单不能宣称查重通过。选题后先登记唯一编号、机制和制作状态，再生成，防止中断后重复选题。修订沿用编号与revision。只复用角色、片头片尾和模板，不重做旧题冒充新一期。
 
 新一期先推荐3个通过查重的题目，逐一说明机制区别，等待用户选择后登记占号；仅在用户明确授权自行选题时跳过选择确认。续作说明新增内容，不冒充全新题。
+
+查重之外还要核对私有 catalog 中的 `reference-coverage-*.json`（已研究参考账号的题目机制清单）：同机制题若对方已发布，提案必须写明差异化角度，或优先推荐未覆盖机制。每个提案同时给出 ≤4 字局名与完整问句标题（见 production-standard 第 9 节）。
