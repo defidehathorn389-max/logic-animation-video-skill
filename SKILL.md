@@ -29,6 +29,7 @@ description: 制作中文横屏逻辑谜题动画，统一黑白讲解人物、�
 - `tools/check_repository_boundary.py`：公开Skill目录白名单和禁止媒体/进度文件检查。
 - `tools/study_frames.py`：参考研究用抽帧拼图、亮度时间线、场景切换与响度测量；只处理公开可得文件，输出存私有证据目录。
 - `tools/script_budget.py`：剧本字数/估时/五拍线索/字幕行长检查（估算，成片以实测为准）。
+- `tools/stage_primitives.py`：舞台动画基元（弹入/滑入/飞行/错开/压暗思考拍、标签/计数徽章/虚线框/戳/锁/情况标签、短语级字幕切分）；`python tools/stage_primitives.py` 输出自测帧。
 - `tools/corpus_beats.py`：对一组 ASR 转写做节拍统计（提问时点、错误思路/步骤/证明/原理线索出现率与时点、语速），研究用；转写文本不得作为剧本素材。
 - `templates/script-five-beat.md`、`templates/stage-layout-spec.md`、`templates/cover-title-formula.md`：剧本五拍、舞台版式与动画词汇、双层标题与封面公式。
 
