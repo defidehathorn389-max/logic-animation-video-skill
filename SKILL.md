@@ -28,6 +28,8 @@ description: 制作中文横屏逻辑谜题动画，统一黑白讲解人物、�
 - `tools/validate_video.py`：编码、尺寸、帧率、完整解码检查；输出应存agent-progress的对应项目证据目录，不提交本库。
 - `tools/check_repository_boundary.py`：公开Skill目录白名单和禁止媒体/进度文件检查。
 - `tools/study_frames.py`：参考研究用抽帧拼图、亮度时间线、场景切换与响度测量；只处理公开可得文件，输出存私有证据目录。
+- `tools/script_budget.py`：剧本字数/估时/五拍线索/字幕行长检查（估算，成片以实测为准）。
+- `templates/script-five-beat.md`、`templates/stage-layout-spec.md`、`templates/cover-title-formula.md`：剧本五拍、舞台版式与动画词汇、双层标题与封面公式。
 
 项目专属渲染脚本属于assets中的项目工程；不能为了“可复现”把整个私有项目拖回公开Skill。
 
