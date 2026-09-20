@@ -12,6 +12,7 @@ description: 制作中文横屏逻辑谜题动画，统一黑白讲解人物、�
 4. 每轮按agent-progress-skill读取权威HEAD检查点，工作中和结束时追加新检查点。禁止将“当前进度”追加到本Skill或README。
 
 ## 执行顺序
+- **每期严格按 `references/episode-pipeline.md` 的 11 步流水线执行**：选题→文案初稿→逻辑门（逐句模拟）→文字分镜→用户确认→TTS/对齐→素材→渲染预览→成片自审→发布件→沉淀同步。门没过不生成语音/图片/视频；`python tools/pipeline_check.py <ep_dir> [--stage N]` 列出缺项。
 - 读取 `references/repository-boundaries.md` 与 `references/production-standard.md`（含第 9 节解谜短视频结构范式），从统一私有进度库确定任务编号和资产版本。研究指定参考创作者时按 `references/reference-study-playbook.md` 执行，证据只进私有进度库。
 - 先校验题设、解法和理想化假设；修改旧题保留编号和原片，不能冒充新题。
 - 先测真实旁白时长，使用声学逐字对齐，所有动画、计数和字幕共享事件时间轴。
@@ -28,6 +29,7 @@ description: 制作中文横屏逻辑谜题动画，统一黑白讲解人物、�
 - `tools/validate_video.py`：编码、尺寸、帧率、完整解码检查；输出应存agent-progress的对应项目证据目录，不提交本库。
 - `tools/check_repository_boundary.py`：公开Skill目录白名单和禁止媒体/进度文件检查。
 - `tools/study_frames.py`：参考研究用抽帧拼图、亮度时间线、场景切换与响度测量；只处理公开可得文件，输出存私有证据目录。
+- `tools/pipeline_check.py`：按 episode-pipeline.md 检查项目目录每一步的产物/门字段是否齐全（只查有无，不替代看图）。
 - `tools/script_budget.py`：剧本字数/估时/五拍线索/字幕行长检查（估算，成片以实测为准）。
 - `tools/stage_primitives.py`：舞台动画基元（弹入/滑入/飞行/错开/压暗思考拍、标签/计数徽章/虚线框/戳/锁/情况标签、短语级字幕切分）；`python tools/stage_primitives.py` 输出自测帧。
 - `tools/corpus_beats.py`：对一组 ASR 转写做节拍统计（提问时点、错误思路/步骤/证明/原理线索出现率与时点、语速），研究用；转写文本不得作为剧本素材。
