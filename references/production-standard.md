@@ -101,7 +101,7 @@
 不满足任一项不得交付；三项都要在 publish.json 的 `consistency_targets` 里写目标值与实测值。
 | 项 | 目标（量测自参考账号 54 篇 ASR） | 怎么保证 |
 |---|---|---|
-| 音频流水线 | 一次跑完：停顿截 0.2s → tempo → atempo → stable-ts 逐字对齐 → 零时长拆分 → 3s 思考拍插入 | 脚本 `tools/audio_pipeline.py <ep_dir>`（需 script.json + audio/NN.wav） |
+| 音频流水线 | 一次跑完：停顿截 0.2s → tempo → atempo → stable-ts 逐字对齐 → 零时长拆分 → 3s 思考拍插入 | 脚本 `tools/audio_pipeline.py <ep_dir>`（需 script.json + audio/NN.wav；可选 `pause_after` / `pause_seconds` / `pause_cap_s`，见 episode-pipeline 工程坑） |
 |---|---|---|
 | 语速 | **320–340 字/分**（纯说话段，中位 325） | 1) 先数文案字数 N；2) TTS 后把 >0.2s 的停顿截到 0.2s（TTS 自带停顿常占 20–30%）；3) 需要的 atempo = 截后时长 ÷ (N/325×60)，允许 1.1–1.35；4) 对齐后用逐字时间反算实测 cpm 写入 |
 | 文案风格 | §2.4 七项结构（第二人称入局、一句钩子、先打脸直觉、动作化揭晓、原理+迁移、口令收尾、句长≤15） | 写完逐项自评；任何一项不满足就改稿，不靠语速补 |

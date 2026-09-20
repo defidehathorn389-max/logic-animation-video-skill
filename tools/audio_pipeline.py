@@ -1,6 +1,14 @@
-# usage: audio_pipeline.py <episode dir>  -> trims pauses, computes tempo, atempo, timeline.json, char-alignment.json (with 3s pause after section 01)
-import soundfile as sf, numpy as np, json, subprocess, sys, re, os
-os.chdir(sys.argv[1]); d=json.load(open('script.json')); N=d['chars']; cap=d.get('pause_cap_s',0.2)
+# usage: audio_pipeline.py <episode dir>  -> trims pauses, computes tempo, atempo, timeline.json, char-alignment.json
+# script.json 可选字段：chars（缺省自动数）、pause_after（思考拍插在第几段之后，默认 1）、pause_seconds（默认 3.0）、pause_cap_s（默认 0.2）；ffmpeg 不在 PATH 时用 imageio_ffmpeg
+import soundfile as sf, numpy as np, json, subprocess, sys, re, os, shutil
+os.chdir(sys.argv[1]); d=json.load(open('script.json')); cap=d.get('pause_cap_s',0.2)
+N=d.get('chars') or sum(len(re.findall(r'[\u4e00-\u9fff0-9]',s['text'])) for s in d['sections']); d['chars']=N
+PAUSE_AFTER=int(d.get('pause_after',1))   # 思考拍插在第几段之后（默认 1；018 的“给你三秒”在第 2 段末）
+FF=shutil.which('ffmpeg') or __import__('imageio_ffmpeg').get_ffmpeg_exe()
+if not shutil.which('ffmpeg'):   # stable-ts 内部直接调用 'ffmpeg'：把 imageio 的二进制以 ffmpeg 之名放进 PATH
+    _b=os.path.join(os.path.expanduser('~'),'.local','bin'); os.makedirs(_b,exist_ok=True); _l=os.path.join(_b,'ffmpeg')
+    if not os.path.exists(_l): os.symlink(FF,_l)
+    os.environ['PATH']=_b+os.pathsep+os.environ.get('PATH','')
 tot=0; tr=[]
 for s in d['sections']:
     x,sr=sf.read(f'audio/{s["id"]}.wav'); x=x.mean(1) if x.ndim>1 else x
@@ -17,7 +25,7 @@ for s in d['sections']:
 tempo=max(1.0,min(1.35,round(tot/(N/325*60),3))); d['tempo']=tempo; json.dump(d,open('script.json','w'),ensure_ascii=False,indent=1)
 t=0; tl=[]
 for s in d['sections']:
-    subprocess.run(['ffmpeg','-loglevel','error','-y','-i',f'audio/{s["id"]}-trim.wav','-filter:a',f'atempo={tempo}',f'audio/{s["id"]}-fast.wav'],check=True)
+    subprocess.run([FF,'-loglevel','error','-y','-i',f'audio/{s["id"]}-trim.wav','-filter:a',f'atempo={tempo}',f'audio/{s["id"]}-fast.wav'],check=True)
     x,sr=sf.read(f'audio/{s["id"]}-fast.wav'); L=len(x)/sr; tl.append({'id':s['id'],'start':round(t,3),'end':round(t+L,3),'text':s['text']}); t+=L+0.3
 print('tempo',tempo,'speech end',round(t,1),'cpm pure',round(N/(sum(e['end']-e['start'] for e in tl)/60)))
 import stable_whisper; model=stable_whisper.load_model('base'); out=[]; issues=[]
@@ -46,7 +54,7 @@ for s in tl:
         if chars[i]['start']<chars[i-1]['end']: chars[i]['start']=chars[i-1]['end']
         if chars[i]['end']<chars[i]['start']+0.03: chars[i]['end']=round(chars[i]['start']+0.03,3)
     out.append({'id':s['id'],'text':s['text'],'start':s['start'],'end':s['end'],'chars':chars})
-PAUSE=3.0; p0=tl[0]['end']+0.3
+PAUSE=float(d.get('pause_seconds',3.0)); p0=tl[PAUSE_AFTER-1]['end']+0.3
 for coll in (tl,out):
     for s in coll:
         if s['start']>=p0-0.01:

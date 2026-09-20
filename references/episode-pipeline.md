@@ -64,6 +64,18 @@
 - 占号条目最少包含：`selected_by_user: true`、`registered_at`、`proposal`（候选文件）、`juming`、`principle`；缺 `selected_by_user` 的占号视为未确认，接手者先向用户复核，不直接开做。
 - 顺序：用户选择 → 写 episodes.json + 制作清单 → **写检查点（含选择来源）** → 一次提交推送 → 再开始文案。有文案/分镜提交也同样先追加检查点再结束回合。
 
+## 步骤 5–9 工程坑（2026-09-20，018 沉淀）
+
+- **环境**：沙箱快照会丢每个克隆的 `.git/config`（remote + user.name/email）——开工先 `git remote -v`，缺了就重加；`commit` 报 "empty ident" / `push` 无 remote 不是仓库坏了。stable-ts 内部直接调用名为 `ffmpeg` 的可执行文件：没有系统 ffmpeg 时把 imageio-ffmpeg 二进制软链成 `~/.local/bin/ffmpeg` 并加进 PATH（`audio_pipeline.py` 已内置）。ASR 对齐与渲染串行跑（2 GB 内存）。
+- **audio_pipeline.py 可选字段**（写在 script.json）：`pause_after`（思考拍插在第几段之后，默认 1；018 的“给你三秒”在第 2 段末 → 2）、`pause_seconds`（默认 3）、`pause_cap_s`（默认 0.2）、`chars`（缺省自动数）。段 id 用 `01…07` 字符串，对应 `audio/NN.wav`。
+- **场景边界别卡在段边界**：段末最后一个短语常是本段的“揭晓词”（018 §04 末“一样多”、§05 末“分毫不差”），下一段首句往往是过渡（“不信就算”“更狠的是”）。渲染器的场景切换应延到下一段的**第一个实义锚点**，否则揭晓文字只停 <1 s。
+- **标签车道**：杯/物顶上的数值标签固定在 `y0−40` 一条车道；勺子/图标飞行路径峰值保持在 `y0−110` 以上或车道以下，飞行结束停靠点也不得压标签；举起某个杯子时隐藏它的标签并把它画在最上层（`wine_on_top`）。
+- **揭晓段的“分层表示”**：交换/混合类题在揭晓时改画“排序后的分层”（水杯淡色 91 + 琥珀条 9 / 酒杯底部淡色条 9），两条同厚即“同一缺口的两面”；数值仍来自状态模型，只是显示顺序不同——分镜里要写明“分层为示意，不是物理分布”。
+- **响度**：用 ffmpeg `loudnorm` 两遍（I=-15, LRA=11）；TP 目标设 −1.5 给 AAC 编码留过冲余量，成片再用 `ebur128=peak=true` 实测（018：设 −1.5 → 成片 −1.4 dBTP；设 −1 时成片 −0.9 超标）。只用 pyloudnorm 增益 + 峰值缩放会被真峰卡在 −19 LUFS。
+- **assets 大库提交**（700 MB+）：`git clone --filter=blob:none --depth 1 --no-checkout` + `git sparse-checkout set episodes/LOGIC-0NN` + `checkout main`，只下当集目录；manifest 用 `git -c core.quotepath=off ls-files -z -s` 取 blob id，字节数取工作区文件或上一版 trees API（同 blob 同大小），推送后用 trees API 逐条核对（键 ⊆ 远端 blob、sha 与 size 相等，manifest 不含自身）。`.gitignore` 会挡 `**/audio-qa.json`，QA 记录进进度库。
+- **证据目录命名**：文案版本与成片版本编号会错位（文案 r2 → 成片 r1）。进度库证据用 `logic-0NN/r1|r2`（文案）与 `logic-0NN/production-r1`（成片）分目录，附 README，别把成片证据覆盖进文案目录。
+- **封面道具**：先把 `draw_spoon` 之类的道具函数写成“先画内容再旋转”，否则倾斜的勺子会丢内容；封面复用同一函数合成（杯+勺）。
+
 ## 步骤 10：沉淀（细则）
 
 每轮结束前问自己三件事并各写一条：
