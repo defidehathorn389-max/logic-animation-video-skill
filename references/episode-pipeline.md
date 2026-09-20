@@ -74,6 +74,8 @@
 - **响度**：用 ffmpeg `loudnorm` 两遍（I=-15, LRA=11）；TP 目标设 −1.5 给 AAC 编码留过冲余量，成片再用 `ebur128=peak=true` 实测（018：设 −1.5 → 成片 −1.4 dBTP；设 −1 时成片 −0.9 超标）。只用 pyloudnorm 增益 + 峰值缩放会被真峰卡在 −19 LUFS。
 - **assets 大库提交**（700 MB+）：`git clone --filter=blob:none --depth 1 --no-checkout` + `git sparse-checkout set episodes/LOGIC-0NN` + `checkout main`，只下当集目录；manifest 用 `git -c core.quotepath=off ls-files -z -s` 取 blob id，字节数取工作区文件或上一版 trees API（同 blob 同大小），推送后用 trees API 逐条核对（键 ⊆ 远端 blob、sha 与 size 相等，manifest 不含自身）。`.gitignore` 会挡 `**/audio-qa.json`，QA 记录进进度库。
 - **证据目录命名**：文案版本与成片版本编号会错位（文案 r2 → 成片 r1）。进度库证据用 `logic-0NN/r1|r2`（文案）与 `logic-0NN/production-r1`（成片）分目录，附 README，别把成片证据覆盖进文案目录。
+- **全帧扫描再渲染**：`--preview` 只采样事件点 +0.25/+0.9 s，弹入动画的极小尺寸帧（pop 起始 k≈0.05）不会被采到；018 r2 正式渲染在 60 s 处因 `ellipse x1<x0` 崩溃、mix 把半截视频封装了出去。渲染前先跑一遍 0.1 s 步长的 `frame(t)` 异常扫描（~1 分钟），所有按 `pop()` 缩放的自绘图形（奖章/本子/气泡/叉）都要有“太小就不画”的守卫。
+- **依赖不持久**：pip 包、whisper 模型缓存、`.cache` 下的稀疏克隆在回合之间都会消失；每回合开工先装依赖（后台 start_process），素材/音频/成片放工作区。
 - **封面道具**：先把 `draw_spoon` 之类的道具函数写成“先画内容再旋转”，否则倾斜的勺子会丢内容；封面复用同一函数合成（杯+勺）。
 
 ## 步骤 10：沉淀（细则）
