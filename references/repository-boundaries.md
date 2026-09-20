@@ -17,3 +17,8 @@
 6. 确認备份成功后清理本地重复件，保留当前需要的文件与无凭据恢复索引。
 
 可执行模板中的repo URL可以指向实际仓库，但不得记录当前项目路径、用户确认结果、运行日志或令牌。没有私有库授权时不得声称已读取其中进度。
+
+## ASSET-MANIFEST 生成注意（2026-09-20 发现）
+- 用 `git ls-files` 列文件时必须 `git -c core.quotepath=off ls-files -z`（或 `git ls-tree -r -z`），否则中文文件名会被写成带引号的八进制转义键（如 `"episodes/LOGIC-017/r1/\346\226\207\346\241\210…md"`），与远端树对不上；当前 manifest 里有 9 个这样的键和 1 个陈旧 blob（LOGIC-016/r4/发布文案.md）。
+- 生成后立即用 GitHub trees API（`git/trees/<sha>?recursive=1`）核对：manifest 键 ⊆ 远端 blob 路径、blob sha 相等；不一致就重生成，不要手改单条。
+- 写入 manifest 的 sha 用 git blob id 与 sha256 二选一要写明字段名，不能混用。

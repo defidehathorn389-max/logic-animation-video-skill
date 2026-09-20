@@ -19,6 +19,18 @@ def main():
     need(bool(secs), 'script.json.sections 存在', 1)
     need(480 <= chars <= 640, f'字数 480–640（时长 85–120s 为准）（现 {chars}）', 1)
     need(len(secs) >= 6, f'≥6 段（7 点结构）（现 {len(secs)}）', 1)
+    # §2.4.1 第二人称入局：'你' 密度 ≥ 12/千字（参考账号 ≈13）；018 r1 曾写成第三人称旁白
+    full = ''.join(x.get('text', '') for x in secs)
+    ni = full.count('你') / max(1, chars) * 1000
+    need(ni >= 12, f'第二人称密度 ≥12/千字（现 {ni:.1f}；第三人称旁白不过门）', 1)
+    # 首问 ≤ 20s（估算 @330cpm，取第 1–2 段中最后一个问句结束位置；实测以成片为准）
+    head = ''.join(x.get('text', '') for x in secs[:2])
+    qpos = head.rfind('？')
+    if qpos >= 0:
+        q_s = len(re.findall(r'[\u4e00-\u9fff0-9]', head[:qpos])) / 330 * 60
+        need(q_s <= 22, f'首问 ≤20s（估算 {q_s:.1f}s @330cpm，含停顿再 +1–2s）', 1)
+    else:
+        need(False, '前两段内没有问句（首问应落在 15–20s）', 1)
     lc = s.get('logic_check', {})
     need(bool(lc), 'script.json.logic_check 存在', 2)
     need(bool(lc.get('sentence_checks')), 'logic_check.sentence_checks（逐句模拟实例）', 2)
