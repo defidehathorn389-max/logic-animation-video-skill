@@ -2,6 +2,8 @@
 # script.json 可选字段：chars（缺省自动数）、pause_after（思考拍插在第几段之后，默认 1）、pause_seconds（默认 3.0）、pause_cap_s（默认 0.2）；ffmpeg 不在 PATH 时用 imageio_ffmpeg
 import soundfile as sf, numpy as np, json, subprocess, sys, re, os, shutil
 os.chdir(sys.argv[1]); d=json.load(open('script.json')); cap=d.get('pause_cap_s',0.2)
+if len(d.get('thinking_pauses',[]))>1:
+    raise SystemExit('Multiple thinking pauses: use audio_timing.py + assemble_audio.py after per-section audio QA; single-pause pipeline refuses to drop extra pauses.')
 N=d.get('chars') or sum(len(re.findall(r'[\u4e00-\u9fff0-9]',s['text'])) for s in d['sections']); d['chars']=N
 PAUSE_AFTER=int(d.get('pause_after',1))   # 思考拍插在第几段之后（默认 1；018 的“给你三秒”在第 2 段末）
 FF=shutil.which('ffmpeg') or __import__('imageio_ffmpeg').get_ffmpeg_exe()
