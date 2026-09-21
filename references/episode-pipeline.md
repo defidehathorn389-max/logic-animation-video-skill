@@ -13,7 +13,7 @@
 | 2 | **逻辑门** | `script.json.logic_check` | 前提合理 / 规则自洽 / **逐句模拟** / 追问正确 / 数字一致 / 通俗一句话 |
 | 3 | 文字分镜 | `storyboard.md`（表：时间/画面动画/屏幕文字/素材） | 开场 5 秒门槛 / 每段 ≥1 动画事件 / 屏幕文字黑+单强调色 / 素材清单 |
 | 4 | 用户确认（文案+分镜） | 用户回复记录进 logic_check.approved_by_user | 用户放行 |
-| 5 | TTS + 音频流水线 | `audio/NN.wav` → `timeline.json` / `char-alignment.json` | 320–340 cpm；总长 85–120s；只重录改动段 |
+| 5 | TTS + 音频流水线 | `audio/NN.wav` → `timeline.json` / `char-alignment.json` | 320–340 cpm；总长 85–120s；只重录改动段；节奏+发音检查（见 production-standard §3）|
 | 6 | 素材 | `art/*.png` + `components.json` + `checks/art-sheet.jpg` | 看图：数量正确、风格一致、无多余文字 |
 | 7 | 渲染器 + 预览 | `render.py --preview` → `checks/ev-*.jpg` | collisions none **且人工看关键帧**（人物头顶 / 图标路径 / 说明文字） |
 | 8 | 成片 + 自审 | `video.mp4` / `checks/enc-sheet.jpg` / `checks/enc-first6s.jpg` | 编码抽帧人工核对；前 6 秒 2fps 核对；LUFS −15±1 |
@@ -49,7 +49,7 @@
 - 屏幕文字只黑 + 单一强调色；字幕样式沿用锁定版。
 - 素材清单：生成 = 物件数（不是状态数）；数量/计数/几何一律程序绘制。
 - 构图：人物与标题分左右车道；数据图（时间轴/钟面）说明文字放图侧上方，不放图标运动路径下方。
-- 幽默 ≤5 处，结论句不放梗。
+- 幽默约4个/分钟（100秒约7处），每段至多一处，结论句与证明句不放梗。
 
 ## 步骤 7–8：自审（细则）
 
