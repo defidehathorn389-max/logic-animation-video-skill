@@ -68,3 +68,5 @@ description: 制作中文横屏逻辑谜题动画，统一黑白讲解人物、�
 
 - 音色选定后先做两段语速预检（题设＋代表讲解），通过后再批量录音；超出提速上限先换声或取得本期速度例外，不把试听选择当作达标证明。
 - 双/多思考拍使用 `tools/audio_timing.py` 与 `tools/assemble_audio.py` 的 sample-exact时间表；真实局部声学字/句时标另行提供。单拍旧入口不会静默吞掉后面的停顿，测试在 `tests/`。
+
+- 可选字幕动效/音效库：`tools/subtitle_effects.py`（11类2D变换、5类原创合成提示音）；参数和边界见 `references/subtitle-effects-components.md`。只用于适当强调节点，不自动替换已批准的正文字幕样式，不直接使用参考作者音轨。
