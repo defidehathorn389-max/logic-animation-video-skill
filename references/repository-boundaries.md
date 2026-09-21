@@ -22,3 +22,7 @@
 - 用 `git ls-files` 列文件时必须 `git -c core.quotepath=off ls-files -z`（或 `git ls-tree -r -z`），否则中文文件名会被写成带引号的八进制转义键（如 `"episodes/LOGIC-017/r1/\346\226\207\346\241\210…md"`），与远端树对不上；当前 manifest 里有 9 个这样的键和 1 个陈旧 blob（LOGIC-016/r4/发布文案.md）。
 - 生成后立即用 GitHub trees API（`git/trees/<sha>?recursive=1`）核对：manifest 键 ⊆ 远端 blob 路径、blob sha 相等；不一致就重生成，不要手改单条。
 - 写入 manifest 的 sha 用 git blob id 与 sha256 二选一要写明字段名，不能混用。
+
+## 素材清单完整性门
+- 清单条目与远端逐条匹配还不够：同时检查远端应纳入的 blob 路径减去 manifest 键的差集。排除 manifest 自身与有明确理由的排除项后，差集必须为空；否则新工程可能存在于远端但无法通过清单恢复。
+- 重建清单以同一不可变提交的完整 tree 为基础，保留未下载的历史文件；不得用稀疏工作区文件列表覆盖全库清单。推送后重新读取 tree 与 manifest，校验路径覆盖、git_blob 与 bytes。
