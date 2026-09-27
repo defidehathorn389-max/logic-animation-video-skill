@@ -18,7 +18,7 @@
 | 7 | 渲染器 + 预览 | `render.py --preview` → `checks/ev-*.jpg` | collisions none **且人工看关键帧**（人物头顶 / 图标路径 / 说明文字） |
 | 8 | 成片 + 自审 | `video.mp4` / `checks/enc-sheet.jpg` / `checks/enc-first6s.jpg` | 编码抽帧人工核对；前 6 秒 2fps 核对；LUFS −15±1 |
 | 9 | 发布件 | SRT / publish.json / 发布文案 / 三比例封面（本集道具） | 封面看图：无空黑块、点缀色 ≤2 处 |
-| 10 | 沉淀 + 同步 | Skill 规则 / assets / agent-progress checkpoint + 回执 / 交接文档 | 独立克隆核验 |
+| 10 | 沉淀 + 同步 | Skill 规则 / assets / agent-progress 检查点（`handoff.py update`；交接文档即该项目的 CURRENT.md） | 进度：`progress_sync.py push` 返回 PUSHED_VERIFIED；assets：trees API 逐条核对 |
 | 11 | 交付 | present + ask_user（选项 + 自定义） | — |
 
 ## 步骤 2：逻辑门（细则）
